@@ -74,9 +74,7 @@ export default function SearchPage({
             initialQuery={query}
             onSearch={(newQuery) => {
               // Redirect to new query (shallow)
-              push(`/search?q=${newQuery}`, {
-                shallow: true,
-              })
+              push(`/search?q=${newQuery}`)
             }}
           />
         </Box>
