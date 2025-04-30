@@ -11,6 +11,13 @@ interface ImageWithFallbackProps extends ImageProps {
 export default function ImageWithFallback(props: ImageWithFallbackProps) {
   const [error, setError] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
+  const [imgSrc, setImgSrc] = useState(props.src)
+
+  useEffect(() => {
+    setImgSrc(props.src)
+    setError(false)
+    setLoading(true)
+  }, [props.src])
 
   // Splitting fallbackSrc from the rest of the props
   const { fallbackSrc, ...rest } = props
@@ -26,26 +33,24 @@ export default function ImageWithFallback(props: ImageWithFallbackProps) {
       <Image
         {...rest}
         alt={props.alt || "Image"}
+        src={imgSrc}
         onError={(e) => {
           setError(true)
           setLoading(false)
-          // Call the onError prop if exists
-          props.onError && props.onError(e)
+          setImgSrc(fallbackSrc)
+          props.onError?.(e)
         }}
-        src={error ? fallbackSrc : props.src}
         onLoad={(e) => {
           setLoading(false)
-          // Call the onLoad prop if exists
-          props.onLoad && props.onLoad(e)
+          props.onLoad?.(e)
         }}
-        // If error, use the worse quality
-        quality={error ? 25 : props.quality || 75}
-        // If loading, show the loader
+        quality={error ? 25 : props.quality ?? 75}
         style={{
           opacity: loading ? 0 : 1,
           transition: "opacity 0.3s ease-in-out",
         }}
       />
+
       {loading && <Loader text="" />}
     </>
   )
